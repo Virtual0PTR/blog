@@ -56,3 +56,4 @@ Extended Next Hop: (true/false)
     + fdee:9bff:b001::1
     + fe80::d555
   + Wireguard Public Key:<br>xin3e9mT1MVzPUVGG7pVIZ<br>/FIkwOIGQNN2cVpCTLNS8=
+  + Bandwidth: 1 Gbps ([`communities`](https://dn42.dev/howto/BGP-communities) may be used)
