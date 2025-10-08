@@ -2,6 +2,7 @@
 date = '2025-10-08T18:08:04+08:00'
 draft = true
 title = '几个被忽略的 GPG 功能_简记'
+tags = ["GnuPG"]
 +++
 
 ## 0x00.环境准备
