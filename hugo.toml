@@ -1,0 +1,96 @@
+baseURL = 'https://blog.virtual0ptr.top/'
+defaultContentLanguage = 'zh-cn'
+title = 'Virtual0PTR Blog'
+theme = 'hugo-theme-stack'
+
+[languages]
+
+[languages.en]
+languageName = 'English'
+weight = 10
+[languages.en.menu]
+
+[[languages.en.menu.main]]
+name = 'Home'
+pageRef = '/'
+weight = 10
+
+[[languages.en.menu.main]]
+name = 'Tags'
+pageRef = '/tags'
+weight = 12
+
+[[languages.en.menu.main]]
+name = 'DN42'
+pageRef = '/tags/dn42'
+weight = 20
+
+[languages.zh-cn]
+languageName = '简体中文'
+weight = 20
+
+[languages.zh-cn.menu]
+
+[[languages.zh-cn.menu.main]]
+name = '主页'
+pageRef = '/'
+weight = 10
+
+[[languages.zh-cn.menu.main]]
+name = '标签'
+pageRef = '/tags'
+weight = 12
+
+[[languages.zh-cn.menu.main]]
+name = '关于'
+pageRef = '/about'
+weight = 16
+
+[[languages.zh-cn.menu.main]]
+name = 'DN42'
+pageRef = '/tags/dn42'
+weight = 20
+
+[params]
+description = "东风起，烟云腾空惊四座；征旗展，青鸟歌日冲九天。"
+
+[params.article]
+toc = true
+
+[params.article.license]
+enabled = true
+default = "Licensed under CC BY-SA 4.0"
+
+[params.widgets]
+
+[[params.widgets.homepage]]
+type = "tag-cloud"
+
+[[params.widgets.page]]
+type = "toc"
+
+[params.sidebar]
+compact = true
+subtitle = "征旗展，青鸟歌日冲九天"
+
+
+[params.sidebar.avatar]
+enabled = true
+
+[params.comments]
+enabled = true
+provider = "giscus"
+
+[params.comments.giscus]
+repo = "Virtual0PTR/blog"
+repoID = "R_kgDOP-bglA"
+category = "Announcements"
+categoryID = "DIC_kwDOP-bglM4CwY1R"
+mapping = "title"
+lightTheme = "light"
+darkTheme = "dark_dimmed"
+reactionsEnabled = 1
+emitMetadata = 0
+
+[params.footer]
+since = 2024
