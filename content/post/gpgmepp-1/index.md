@@ -109,7 +109,7 @@ std::string clearsign(std::unique_ptr<GpgME::Context>& context, std::string_view
     GpgME::Data inputdata{rawdata.data(), rawdata.size(), false}; //false -> inputdata相当于一个指针;
     GpgME::Data outputdata{};
     auto signingresult = context->sign(inputdata, outputdata, GpgME::Clearsigned);
-    if (!signingresult.error().isSuccess()) { // xxResult最常用来当Error;当操作取消时，不视 为错误（error为false），但仍可throw;
+    if (!signingresult.error().isSuccess()) { // xxResult最常用来当Error;当操作取消时，不视为错误（error为false），但仍可throw;
         throw GpgME::Exception{signingresult.error()};
     };
     return outputdata.toString();
@@ -131,7 +131,50 @@ g++ helloworld.cpp -o helloworld -std=c++23 `pkg-config --cflags --libs gpgmepp`
 ```
 一切顺利的话，你就可以看到你的Hello World啦！
 
-### WIP:0x23. 发生了什么？
+### 0x23. 发生了什么？
+上面的代码编译、执行后，应该会输出一段文本，形式如下:
+``` bash
+结果:
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
+
+Hello World!
+-----BEGIN PGP SIGNATURE-----
+
+iH8EARYIACcgHEZQU1dhdGVyY2F0IDxpQHZpcnR1YWwwcHRyLnRvcD4FAmj0v0wA
+CgkQ2iqcmgVV7u5pxgD/QouHcT2CJxgMcoJqDKIseHMxoQvSyomhYbUwXp2xpYgB
+AK1hFzfp1wVx2v53lW/IRK3ARlweoU1JbIrW0/I9zOcN
+=qMXI
+-----END PGP SIGNATURE-----
+```
+我们不难发现，这是一段clearsign文本，也就是说这个程序拿你的私钥签了个名。  
+你可以使用 `echo "<你的clearsign签名>" | gpg --verify` 来验证一下哟！
+
+### 0x24. 是怎么发生的？
+
+回看程序，我们在 `main函数` 中调用了上面定义的 `clearsign函数`，这个函数接收 **GpgME::Context** 和我们的**待签名文本**作为参数。  
+
+**GpgME::Context** 是什么？它是标准的接口，代表一个 **GnuPG** 上下文  
+
+> 提示: 基本上 GpgME++ 的所有接口都定义在 `GpgME::Context` 类中  
+
+之后，让我们到函数体里看看，核心操作自然是 `context->sign(inputdata, outputdata, GpgME::Clearsigned);` 啦。  
+欸？context在这里，**GpgME::Clearsigned** 也证明我们刚才看到的确实是明文签名，但我们的 **待签名文本**呢？  
+
+往上看！它被用`GpgME::Data inputdata{rawdata.data(), rawdata.size(), false};` 包装了一下！这样，我们的待签名文本就传进去了！  
+
+> 提示: GpgME++ 所有数据的传入传出都使用统一的 `GpgME::Data` 对象  
+
+同理 **outputdata** 也是一样，是传出的签名哦。我们对其调用了 `toString() 方法`，这样，它就变成了返回值回到了主函数里了。
+  
+去掉夹杂在里面的错误处理后，上面还有一些东东，是什么呢？ 
+
+> 提示: GpgME++ 的错误处理是错误码，但提供现成的 Expection 封装  
+   
+是选择密钥！这里，我们的逻辑是选择第一个可签名的密钥。  
+
+这样，我们就选择了一个合适的密钥，传入了我们的原文本，并用函数进行签名，最后输出了我们的签名。
+
 
 ## WIP:0x30. 库的基本介绍
 
