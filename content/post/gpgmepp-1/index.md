@@ -1,13 +1,13 @@
 +++
 date = '2025-10-14T18:18:35+08:00'
 draft = false
-title = 'GpgME++ 库的使用（1）'
+title = 'GpgME++ 库的使用 (1)'
 tags = ["GnuPG", "Library-usage", "Document-style"]
 +++
 
 ## 0x00. 前言
 
-这篇文章主要介绍了GpgME\+\+的使用，同志们应当了解什么是GnuPG，会用现代C++(C++20以上)进行编程哦！
+这篇文章主要介绍了 **GpgME\+\+** 的使用，同志们应当了解什么是GnuPG，会用现代C++ (C++20以上) 进行编程哦！
 
 ## 0x01. 这是什么？
 
@@ -16,14 +16,14 @@ GnuPG Made Easy (GPGME) 是一个旨在让应用程序更容易访问 GnuPG 的�
 {{< /quote >}}  
 
 
-GpgME++(GPGMEPP)就是GPGME的C++绑定库。
+GpgME++ (aka GPGMEPP) 就是GPGME的C++绑定库。
 可以发现，他的目标是“让应用程序更容易访问 GnuPG”，而不是“让应用程序更容易使用 OpenPGP”。
 因此，这带来了一些特点，例如：
 1. 它一离开 GnuPG 就是纸老虎。
-2. 它（在默认情况下）会对 ~/.gnupg 做操作。
+2. 它 (在默认情况下) 会对 ~/.gnupg 做操作。
 3. 它会调用 Pinentry 解密密钥。
-4. 它在调用 OpenPGP Smartcard 上 遥遥领先 (
-5. 接口相对友好，但保留有许多C-style(如使用const char*)
+4. 它在调用 OpenPGP Smartcard 上 **遥遥领先**。
+5. 接口相对友好，但保留有许多C-style (如使用const char*)。
 
 如果真的你打算使用的话...
 
@@ -31,11 +31,11 @@ GpgME++(GPGMEPP)就是GPGME的C++绑定库。
 
 ### 0x21. 配置环境
 
-假如你用Debian/Ubuntu，那应该用的是：
+假如你用Debian/Ubuntu，那应该用的是:
 ``` bash
 sudo apt-get install libgpgmepp-dev
 ```
-假如你用Fedora，那应该用的是：
+假如你用Fedora，那应该用的是:
 ``` bash
 sudo dnf install gpgmepp-devel
 ``` 
@@ -43,12 +43,11 @@ sudo dnf install gpgmepp-devel
 ``` bash
 sudo yum install gpgmepp-devel 
 ```
-假如你用Arch，那应该用的是：
+假如你用Arch，那应该用的是:
 ``` bash
 sudo pacman -S gpgmepp
 ```
 {{< details summary="我把小众的发行版叠起来了" >}}
-<detail>
 我使用的是Gentoo，这是我的安装命令发生的变化:
 ``` bash
 sudo emerge -a dev-cpp/gpgmepp:0
@@ -57,19 +56,19 @@ Opensuse应该是:
 ``` bash
 sudo zypper install gpgmepp
 ```
-Aosc好像最近挺有名的（GpgME++包括在GPGME中了，其他相似情况也是一样）:
+Aosc好像最近挺有名的 (GpgME++包括在GPGME中了，其他相似情况也是一样):
 ``` bash
 sudo oma install gpgme
 ```
-Alpine（不要被gpgmepp包骗了）:
+Alpine (不要被gpgmepp包骗了):
 ``` bash
 sudo apk add gpgme-dev
 ```
-Void Linux：
+Void Linux:
 ``` bash
 sudo xbps-install -S gpgmepp-devel
 ```
-致敬自由软件斗士Guix GNU/Linux：
+致敬自由软件斗士Guix GNU/Linux:
 ``` bash
 guix install gpgme
 ```
@@ -78,7 +77,7 @@ guix install gpgme
 ### 0x22. Hello World!
 ``` C++
 //helloworld.cpp
-//使用前请保证知识有一个私钥哦！有多个的话可以改下面startKeyListing的参数
+//使用前请保证至少有一个私钥哦！有多个的话可以改下面startKeyListing的参数
 #include <gpgme++/context.h>
 #include <gpgme++/global.h>
 #include <gpgme++/data.h>
@@ -130,8 +129,13 @@ int main()
 ``` bash
 g++ helloworld.cpp -o helloworld -std=c++23 `pkg-config --cflags --libs gpgmepp`
 ```
-一切顺利的话，你就可以看到你的Hello World啦!
-### WIP:0x23.基本对象的基本介绍
+一切顺利的话，你就可以看到你的Hello World啦！
+
+### WIP:0x23. 发生了什么？
+
+## WIP:0x30. 库的基本介绍
+
+### WIP:0x31. 基本对象的基本介绍
 
 #### 1. Context
 
@@ -145,7 +149,7 @@ g++ helloworld.cpp -o helloworld -std=c++23 `pkg-config --cflags --libs gpgmepp`
 
 的神。  
 
-**对象获取：**
+**对象获取:**
 1. `static std::unique_ptr<Context> GpgME::Context::create(Protocol proto);` 
 2. `static Context *GpgME::Context::createForProtocol(Protocol proto);`
 3. `std::unique_ptr<Context> createForEngine(Engine engine, Error *err = nullptr);`
@@ -155,14 +159,14 @@ Protocol可以取GpgME::OpenPGP和GpgME::CMS。
 
 > 如你所见，2)返回的是裸指针，所以强烈不建议使用哦!
 
-**方法列表：**  
+**方法列表:**  
 既然是核心类，肯定是要单开一部分的，所以，这里就不介绍了。  
 
 #### 2. Data
 
 Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有Data就不能向基本操作传入数据。  
 
-**对象获取：**  
+**对象获取:**  
 > 这里可以使用构造函数啦！
 
 ##### 基于内存的数据缓冲区
@@ -198,8 +202,6 @@ Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有
 
 ##### 缓冲区操作
 
-> 是很标准的缓冲区操作函数（不过读写指针在一起）
-
 1. `ssize_t read(void *buffer, size_t length);`
 2. `ssize_t write(const void *buffer, size_t length);`
 3. `off_t seek(off_t offset, int whence);`
@@ -207,7 +209,7 @@ Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有
 
 > 如果需要多次传入同一数据，每次传入数据后都要用一次rewind();！
 
-##### 文件操作(只是读文件！)
+##### 文件操作 (只是读文件！)
 
 > 这里的设置只能读文件哦！
 
@@ -224,7 +226,7 @@ Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有
 
 ##### 其他操作
 
-> `std::string toString();`超级常用哦
+> `std::string toString();` 超级常用哦
 
 1. `std::string toString();`
 
@@ -234,25 +236,20 @@ Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有
 > 对于2,3，这里引用一下GpgME的文档
 
 {{< quote author="The GnuPG Made Easy Reference Manual" source="6.3.2 Data Buffer Meta-Data" url="https://www.gnupg.org/documentation/manuals/gpgme/Data-Buffer-Meta_002dData.html">}}
-起始版本：1.7.0
-可通过此函数设置标志来控制数据对象的一些次要属性。属性通过以下 name 值进行标识：
-size-hint（大小提示）
-    value 是一个十进制数字，表示 gpgme 应为此数据对象假定的长度。当数据通过回调函数或文件描述符提供，但应用程序知道数据总大小时，此属性非常有用。如果设置此属性，OpenPGP 引擎可能会使用该值来决定缓冲区分配策略，并为进度信息提供总值。
-io-buffer-size（I/O缓冲区大小）
-    value 是一个十进制数字，表示用于内部 I/O 操作的内部缓冲区长度。该值上限为 1048576（1 MiB）。在某些环境下，较大的缓冲区可以提升基于回调的数据对象的性能，但具体效果很大程度上取决于运行环境和操作系统。此标志只能设置一次，并且必须在数据对象发生任何实际 I/O 操作之前设置。
-sensitive（敏感数据）
-    如果数值不为 0，则表示该数据对象包含敏感信息（如密码或密钥材料）。设置此标志后，gpgme_data_release 函数将以零值安全覆盖内部缓冲区。
-此函数成功时返回 0。
+起始版本：1.7.0  
+可通过此函数设置标志来控制数据对象的一些次要属性。属性通过以下 name 值进行标识:  
+size-hint (大小提示)  
+value 是一个十进制数字，表示 gpgme 应为此数据对象假定的长度。当数据通过回调函数或文件描述符提供，但应用程序知道数据总大小时，此属性非常有用。如果设置此属性，OpenPGP 引擎可能会使用该值来决定缓冲区分配策略，并为进度信息提供总值。  
+io-buffer-size (I/O缓冲区大小)  
+value 是一个十进制数字，表示用于内部 I/O 操作的内部缓冲区长度。该值上限为 1048576（1 MiB）。在某些环境下，较大的缓冲区可以提升基于回调的数据对象的性能，但具体效果很大程度上取决于运行环境和操作系统。此标志只能设置一次，并且必须在数据对象发生任何实际 I/O 操作之前设置。  
+sensitive (敏感数据)  
+如果数值不为 0，则表示该数据对象包含敏感信息（如密码或密钥材料）。设置此标志后，gpgme_data_release 函数将以零值安全覆盖内部缓冲区。  
+此函数成功时返回 0。  
 {{< /quote >}}  
 
 #### WIP:4.Key
-这个东西就代表你的一个密钥，加密和签名都需要它。  
-**方法列表：** 
+这个东东就代表你的一个密钥，加密和签名都需要它。  
 
-#### WIP:5.Subkey
+### WIP:0x32. 基本操作
 
-#### WIP:6.UserID
-
-### WIP:0x24.基本操作
-
-### WIP:0x25.错误处理
+### WIP:0x33. 错误处理
