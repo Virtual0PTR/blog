@@ -75,7 +75,7 @@ guix install gpgme
 {{< /details >}}
 
 ### 0x22. Hello World!
-``` C++
+``` c++
 //helloworld.cpp
 //使用前请保证至少有一个私钥哦！有多个的话可以改下面startKeyListing的参数
 #include <gpgme++/context.h>
@@ -161,12 +161,12 @@ AK1hFzfp1wVx2v53lW/IRK3ARlweoU1JbIrW0/I9zOcN
 之后，让我们到函数体里看看，核心操作自然是 `context->sign(inputdata, outputdata, GpgME::Clearsigned);` 啦。  
 欸？context在这里，**GpgME::Clearsigned** 也证明我们刚才看到的确实是明文签名，但我们的 **待签名文本**呢？  
 
-往上看！它被用`GpgME::Data inputdata{rawdata.data(), rawdata.size(), false};` 包装了一下！这样，我们的待签名文本就传进去了！  
-
-> 提示: GpgME++ 所有数据的传入传出都使用统一的 `GpgME::Data` 对象  
+往上看！它被用`GpgME::Data inputdata{rawdata.data(), rawdata.size(), false};` 包装了一下！这样，我们的待签名文本就传进去了！   
 
 同理 **outputdata** 也是一样，是传出的签名哦。我们对其调用了 `toString() 方法`，这样，它就变成了返回值回到了主函数里了。
-  
+
+> 提示: GpgME++ 所有数据的传入传出都使用统一的 `GpgME::Data` 对象 
+
 去掉夹杂在里面的错误处理后，上面还有一些东东，是什么呢？ 
 
 > 提示: GpgME++ 的错误处理是错误码，但提供现成的 Expection 封装  
@@ -193,9 +193,9 @@ AK1hFzfp1wVx2v53lW/IRK3ARlweoU1JbIrW0/I9zOcN
 的神。  
 
 **对象获取:**
-1. `static std::unique_ptr<Context> GpgME::Context::create(Protocol proto);` 
-2. `static Context *GpgME::Context::createForProtocol(Protocol proto);`
-3. `std::unique_ptr<Context> createForEngine(Engine engine, Error *err = nullptr);`
+1. `static std::unique_ptr<Context> Context::create(Protocol proto);` 
+2. `static Context *Context::createForProtocol(Protocol proto);`
+3. `std::unique_ptr<Context> Context::createForEngine(Engine engine, Error *err = nullptr);`
 
 Protocol可以取GpgME::OpenPGP和GpgME::CMS。
 > 正常情况下，proto应当取GpgME::OpenPGP
@@ -240,41 +240,40 @@ Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有
 
 ##### 通用操作
 
-1. `void swap(Data &other);`
-2. `bool isNull() const;`
+1. `void Data::swap(Data &other);`
+2. `bool Data::isNull() const;`
 
 ##### 缓冲区操作
 
-1. `ssize_t read(void *buffer, size_t length);`
-2. `ssize_t write(const void *buffer, size_t length);`
-3. `off_t seek(off_t offset, int whence);`
-4. `Error rewind();`
+1. `ssize_t Data::read(void *buffer, size_t length);`
+2. `ssize_t Data::write(const void *buffer, size_t length);`
+3. `off_t Data::seek(off_t offset, int whence);`
+4. `Error Data::rewind();`
 
-> 如果需要多次传入同一数据，每次传入数据后都要用一次rewind();！
+> 如果需要多次传入同一数据，每次传入数据后都要用一次  `rewind();`！
 
 ##### 文件操作 (只是读文件！)
 
 > 这里的设置只能读文件哦！
 
-1. `char *fileName() const;`
-2. `Error setFileName(const char *name);`
-3. `Error setFileName(const std::string &name);`
+1. `char *Data::fileName() const;`
+2. `Error Data::setFileName(const char *name);`
+3. `Error Data::setFileName(const std::string &name);`
 
 ##### 类型相关
 
-1. `Encoding encoding() const;`
-2. `Error setEncoding(Encoding encoding);`
-3. `Type type() const;`
-4. `std::vector<Key> toKeys(const Protocol proto = Protocol::OpenPGP) const;`
+1. `Encoding Data::encoding() const;`
+2. `Error Data::setEncoding(Encoding encoding);`
+3. `Type Data::type() const;`
+4. `std::vector<Key> Data::toKeys(const Protocol proto = Protocol::OpenPGP) const;`
 
 ##### 其他操作
 
-> `std::string toString();` 超级常用哦
+> `std::string Data::toString();` 超级常用哦
 
-1. `std::string toString();`
-
-2. `Error setFlag(const char *name, const char *value);`
-3. `Error setSizeHint(uint64_t size);`
+1. `std::string Data::toString();`
+2. `Error Data::setFlag(const char *name, const char *value);`
+3. `Error Data::setSizeHint(uint64_t size);`
 
 > 对于2,3，这里引用一下GpgME的文档
 
@@ -291,7 +290,39 @@ sensitive (敏感数据)
 {{< /quote >}}  
 
 #### WIP:4.Key
-这个东东就代表你的一个密钥，加密和签名都需要它。  
+这个东东就代表你的一个密钥，加密和签名都需要它。 
+
+**对象获取:**  
+
+> 又不能用构造函数了awa...
+
+1. `static Key Key::locate(const char *mbox);`
+2. `Key Context::key(const char *fingerprint, GpgME::Error &e, bool secret = false);`
+3. `Key Context::nextKey(GpgME::Error &e);`
+
+> 同志们看清楚，2,3是 Context 的方法哦！
+
+1...等同于 `gpg --locate-key <mbox>`，会尝试从密钥服务器拉取密钥。  
+2是通过指纹直接选钥，参数列表不再赘述。  
+
+说到3，就在这里介绍 GpgME++ 的一大重要操作--密钥列举吧！  
+
+##### 密钥列举
+
+**密钥列举**是从本地工作目录获取 Key 的操作，其核心是下列三种四个函数:  
+1. `GpgME::Error Context::startKeyListing(const char *pattern = nullptr, bool secretOnly = false);`
+2. `GpgME::Error Context::startKeyListing(const char *patterns[], bool secretOnly = false);`
+3. `Key Context::nextKey(GpgME::Error &e);`
+4. `KeyListResult Context::endKeyListing();`
+
+这个操作还是比较 C 风格的。具体来说，就是:  
+首先调用 `Context::startKeyListing(...);`，进入密钥列举模式。  
+之后使用 `Context::nextKey(...);` 依次获取密钥。  
+在拿到的 Key 为空或 Error 不为空时，证明密钥列表遍历完毕。  
+无论是遍历完还是拿到所需的密钥，都应该调用 `Context::endKeyListing(...);` 退出列举模式。  
+
+> **pattern** 是匹配模式，可以是字符串数组，匹配的可以是 Uid 也可以是指纹
+
 
 ### WIP:0x32. 基本操作
 
