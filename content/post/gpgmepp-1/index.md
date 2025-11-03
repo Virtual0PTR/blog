@@ -212,7 +212,9 @@ Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有
 **对象获取:**  
 > 这里可以使用构造函数啦！
 
-##### 基于内存的数据缓冲区
+{{< details summary="构造函数" >}}
+
+*基于内存的数据缓冲区*
 
 > 既然是基于内存的，就不要指望用文件做参数时会自动回写啦！  
 > 参数是用来读(入内存)的，不是用来写的哦(OwO)
@@ -223,27 +225,31 @@ Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有
 4. `Data(const char *filename, off_t offset, size_t length);`
 5. `Data(std::FILE *fp, off_t offset, size_t length);`
 
-##### 基于文件的数据缓冲区
+*基于文件的数据缓冲区*
 
 > 是的，这里传入文件句柄的构造函数才会自动回写
 
 1. `explicit Data(std::FILE *fp);`
 2. `explicit Data(int fd);`
 
-##### 基于回调的数据缓冲区
+*基于回调的数据缓冲区*
 
 1. `explicit Data(DataProvider *provider);`
 
 > 众所周知，C++的流也是缓冲区，所以可以用DataProvider进行包装，有机会我会给出例子
 
+{{< /details >}}
+
 **方法列表：** 
 
-##### 通用操作
+{{< details summary="方法" >}}
+
+*通用操作*
 
 1. `void Data::swap(Data &other);`
 2. `bool Data::isNull() const;`
 
-##### 缓冲区操作
+*缓冲区操作*
 
 1. `ssize_t Data::read(void *buffer, size_t length);`
 2. `ssize_t Data::write(const void *buffer, size_t length);`
@@ -252,7 +258,7 @@ Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有
 
 > 如果需要多次传入同一数据，每次传入数据后都要用一次  `rewind();`！
 
-##### 文件操作 (只是读文件！)
+*文件操作 (只是读文件！)*
 
 > 这里的设置只能读文件哦！
 
@@ -260,14 +266,14 @@ Data对象是提供/获取数据的核心对象，被设计为缓冲区。没有
 2. `Error Data::setFileName(const char *name);`
 3. `Error Data::setFileName(const std::string &name);`
 
-##### 类型相关
+*类型相关*
 
 1. `Encoding Data::encoding() const;`
 2. `Error Data::setEncoding(Encoding encoding);`
 3. `Type Data::type() const;`
 4. `std::vector<Key> Data::toKeys(const Protocol proto = Protocol::OpenPGP) const;`
 
-##### 其他操作
+*其他操作*
 
 > `std::string Data::toString();` 超级常用哦
 
@@ -289,6 +295,8 @@ sensitive (敏感数据)
 此函数成功时返回 0。  
 {{< /quote >}}  
 
+{{< /details >}}  
+
 #### WIP:4.Key
 这个东东就代表你的一个密钥，加密和签名都需要它。 
 
@@ -304,7 +312,6 @@ sensitive (敏感数据)
 
 1...等同于 `gpg --locate-key <mbox>`，会尝试从密钥服务器拉取密钥。  
 2是通过指纹直接选钥，参数列表不再赘述。  
-
 说到3，就在这里介绍 GpgME++ 的一大重要操作--密钥列举吧！  
 
 ##### 密钥列举
@@ -320,9 +327,41 @@ sensitive (敏感数据)
 之后使用 `Context::nextKey(...);` 依次获取密钥。  
 在拿到的 Key 为空或 Error 不为空时，证明密钥列表遍历完毕。  
 无论是遍历完还是拿到所需的密钥，都应该调用 `Context::endKeyListing(...);` 退出列举模式。  
+具体流程可以看 **Hello World**。  
 
-> **pattern** 是匹配模式，可以是字符串数组，匹配的可以是 Uid 也可以是指纹
+> **pattern** 是匹配模式: 可以是字符串数组；可以是 Uid 也可以是指纹
 
+**方法列表：**  
+
+{{< details summary="方法" >}}
+
+*状态/用途*
+
+1. `bool Key::isRevoked() const;`
+2. `bool Key::isExpired() const;`
+3. `bool Key::isDisabled() const;`
+4. `bool Key::isInvalid() const;`
+5. `bool Key::isBad() const;`
+6. `bool Key::canEncrypt() const;`
+7. `bool Key::canSign() const;`
+8. `bool Key::canCertify() const;`
+9. `bool Key::canAuthenticate() const;`
+10. `bool Key::isQualified() const;`
+11. `bool Key::isDeVs() const;`
+
+> canXX 系列函数和 hasXX 系列函数的区别在于: canXX 是整体，而 hasXX 是看其子密钥的。故，我们一般使用 canXX 系列函数
+
+12. `bool Key::hasCertify() const;`
+13. `bool Key::hasSign() const;`
+14. `bool Key::hasEncrypt() const;`
+15. `bool Key::hasAuthenticate() const;`
+16. `bool Key::hasSecret() const;`
+
+> `isRoot()`不是OpenPGP概念 (CMS)，掠过不讲了。
+
+17. `bool Key::isRoot() const;`
+
+{{< /details >}}
 
 ### WIP:0x32. 基本操作
 
