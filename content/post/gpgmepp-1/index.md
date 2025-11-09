@@ -1,26 +1,26 @@
 +++
 date = '2025-10-14T18:18:35+08:00'
 draft = false
-title = 'GpgME++ 库的使用 (1)'
+title = 'GpgME++ 库的简明使用'
 tags = ["GnuPG", "Library-usage", "Document-style"]
 +++
 
 ## 0x00. 前言
 
-这篇文章主要介绍了 **GpgME\+\+** 的使用，同志们应当了解什么是GnuPG，会用现代C++ (C++20以上) 进行编程哦！
+这篇文章主要介绍了 **GpgME\+\+** 的使用，同志们应当了解什么是GnuPG，会用现代C++ (C++20以上) 进行编程！
 
 ## 0x01. 这是什么？
 
-{{< quote author="GnuPG" source="GPGME" url="https://www.gnupg.org/software/gpgme/index.html">}}
-GnuPG Made Easy (GPGME) 是一个旨在让应用程序更容易访问 GnuPG 的库。它提供了一个用于加密 、解密、签名、签名验证和密钥管理的加密 API。目前它使用 GnuPG 的 OpenPGP 后端作为默认选项，但 API 并不限于这个引擎。
+{{< quote author="GnuPG" source="GpgME" url="https://www.gnupg.org/software/gpgme/index.html">}}
+GnuPG Made Easy (GpgME) 是一个旨在让应用程序更容易访问 GnuPG 的库。它提供了一个用于加密 、解密、签名、签名验证和密钥管理的加密 API。目前它使用 GnuPG 的 OpenPGP 后端作为默认选项，但 API 并不限于这个引擎。
 {{< /quote >}}  
 
 
-GpgME++ (aka GPGMEPP) 就是GPGME的C++绑定库。
+GpgME++ (aka GpgMEPP) 就是GPGME的C++绑定库。
 可以发现，他的目标是“让应用程序更容易访问 GnuPG”，而不是“让应用程序更容易使用 OpenPGP”。
 因此，这带来了一些特点，例如：
 1. 它一离开 GnuPG 就是纸老虎。
-2. 它 (在默认情况下) 会对 ~/.gnupg 做操作。
+2. 它 (在默认情况下) 会操作 ~/.gnupg。
 3. 它会调用 Pinentry 解密密钥。
 4. 它在调用 OpenPGP Smartcard 上 **遥遥领先**。
 5. 接口相对友好，但保留有许多C-style (如使用const char*)。
@@ -31,24 +31,24 @@ GpgME++ (aka GPGMEPP) 就是GPGME的C++绑定库。
 
 ### 0x21. 配置环境
 
-假如你用Debian/Ubuntu，那应该用的是:
+假如你用 Debian/Ubuntu，那应该用的是:
 ``` bash
 sudo apt-get install libgpgmepp-dev
 ```
-假如你用Fedora，那应该用的是:
+假如你用 Fedora，那应该用的是:
 ``` bash
 sudo dnf install gpgmepp-devel
 ``` 
-同理，CentOS是:
+同理，CentOS 是:
 ``` bash
 sudo yum install gpgmepp-devel 
 ```
-假如你用Arch，那应该用的是:
+假如你用 Arch，那应该用的是:
 ``` bash
 sudo pacman -S gpgmepp
 ```
 {{< details summary="我把小众的发行版叠起来了" >}}
-我使用的是Gentoo，这是我的安装命令发生的变化:
+我使用的是 Gentoo，这是我的安装命令发生的变化:
 ``` bash
 sudo emerge -a dev-cpp/gpgmepp:0
 ```
@@ -56,129 +56,252 @@ Opensuse应该是:
 ``` bash
 sudo zypper install gpgmepp
 ```
-Aosc好像最近挺有名的 (GpgME++包括在GPGME中了，其他相似情况也是一样):
+Aosc 好像最近挺有名的 (GpgME++包括在GPGME中了，其他相似情况也是一样):
 ``` bash
 sudo oma install gpgme
 ```
-Alpine (不要被gpgmepp包骗了):
+Alpine:
 ``` bash
-sudo apk add gpgme-dev
+sudo apk add gpgme-dev gpgmepp
 ```
 Void Linux:
 ``` bash
 sudo xbps-install -S gpgmepp-devel
 ```
-致敬自由软件斗士Guix GNU/Linux:
+致敬自由软件斗士 Guix GNU/Linux:
 ``` bash
 guix install gpgme
 ```
 {{< /details >}}
 
 ### 0x22. Hello World!
+
+> 警告：这是一个很不完备的版本 (没有任何错误检查)
+
 ``` c++
-//helloworld.cpp
-//使用前请保证至少有一个私钥哦！有多个的话可以改下面startKeyListing的参数
 #include <gpgme++/context.h>
 #include <gpgme++/global.h>
 #include <gpgme++/data.h>
-#include <gpgme++/keylistresult.h>
 #include <gpgme++/signingresult.h>
-#include <gpgme++/error.h>
-#include <gpgme++/exception.h>
 #include <memory>
 #include <print>
-#include <stdexcept>
 #include <string_view>
 
-std::string clearsign(std::unique_ptr<GpgME::Context>& context, std::string_view rawdata) {
-    GpgME::Error error;
-    context->startKeyListing("", true); // "" -> 匹配所有;多密钥可修改为UID/指纹;true -> 只列出私钥;
-    GpgME::Key key;
-    do {
-        key = context->nextKey(error);
-    } while ( !(error || key.canSign()) ); // 如果error为真 -> 无可用钥，跳出并报错;如果canSign为真 -> 此钥可用，跳出;
-    context->endKeyListing();
-    if (error) {
-        throw GpgME::Exception{error}; //GpgME++指供了现成的Exception封装，可直接throw;
-    };
-    context->clearSigningKeys();
-    error = context->addSigningKey(key); //Error可重用;
-    if (error) {
-        throw GpgME::Exception{error};
-    };
-    GpgME::Data inputdata{rawdata.data(), rawdata.size(), false}; //false -> inputdata相当于一个指针;
-    GpgME::Data outputdata{};
-    auto signingresult = context->sign(inputdata, outputdata, GpgME::Clearsigned);
-    if (!signingresult.error().isSuccess()) { // xxResult最常用来当Error;当操作取消时，不视为错误（error为false），但仍可throw;
-        throw GpgME::Exception{signingresult.error()};
-    };
-    return outputdata.toString();
-};
 
 int main()
 {
     GpgME::initializeLibrary();
-    auto context = GpgME::Context::create(GpgME::OpenPGP);
-    if (!context) {
-        throw std::runtime_error("Unable to create context");
-    };
-    std::println("结果:\n{}", clearsign(context, "Hello World!"));
+    GpgME::Error error{};
+    std::string_view text{"Hello World"};
+    std::unique_ptr<GpgME::Context> context = GpgME::Context::create(GpgME::OpenPGP);
+    GpgME::Data inputdata{text.data(), text.size(), false}; //false -> inputdata相当于一个指针;
+    GpgME::Data outputdata{};
+    GpgME::SigningResult signingresult = context->sign(inputdata, outputdata, GpgME::Clearsigned);
+    outputdata.toString();
+    std::println("{}", outputdata.toString());
 };
+
 ```
 我们可以使用以下命令进行编译:
 ``` bash
-g++ helloworld.cpp -o helloworld -std=c++23 `pkg-config --cflags --libs gpgmepp`
+g++ helloworld.cpp -o helloworld.out -std=c++23 `pkg-config --cflags --libs gpgmepp`
+./helloworld.out
 ```
 一切顺利的话，你就可以看到你的Hello World啦！
 
 ### 0x23. 发生了什么？
 上面的代码编译、执行后，应该会输出一段文本，形式如下:
 ``` bash
-结果:
 -----BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+Hash: SHA512
 
-Hello World!
+Hello World
 -----BEGIN PGP SIGNATURE-----
 
-iH8EARYIACcgHEZQU1dhdGVyY2F0IDxpQHZpcnR1YWwwcHRyLnRvcD4FAmj0v0wA
-CgkQ2iqcmgVV7u5pxgD/QouHcT2CJxgMcoJqDKIseHMxoQvSyomhYbUwXp2xpYgB
-AK1hFzfp1wVx2v53lW/IRK3ARlweoU1JbIrW0/I9zOcN
-=qMXI
+iHUEARYKAB0WIQS5XbvKDqiCeLV0n+3aKpyaBVXu7gUCaQ71iAAKCRDaKpyaBVXu
+7h58AQD34Ue83/VXzoYQmHfBNMvfXZV/eg71hkvtcUCrSBQzwgD7B8miO1fmSJHL
+DpoE8Dd7Mlm2NPH04IAV/Y1uvSZdXwM=
+=/Quw
 -----END PGP SIGNATURE-----
 ```
-我们不难发现，这是一段clearsign文本，也就是说这个程序拿你的私钥签了个名。  
-你可以使用 `echo "<你的clearsign签名>" | gpg --verify` 来验证一下哟！
+我们不难发现，这是一段 clearsign 文本，也就是说这个程序拿你的私钥签了个名。  
+你可以使用 `echo "<你的clearsign签名>" | gpg --verify` 来验证一下哟! 
 
 ### 0x24. 是怎么发生的？
 
-回看程序，我们在 `main函数` 中调用了上面定义的 `clearsign函数`，这个函数接收 **GpgME::Context** 和我们的**待签名文本**作为参数。  
+回看程序，我们的核心操作自然是`context->sign(inputdata, outputdata, GpgME::Clearsigned);`啦。  
+可是，**context** 是什么?   
+它是标准的接口，代表一个 **GnuPG** 上下文  
 
-**GpgME::Context** 是什么？它是标准的接口，代表一个 **GnuPG** 上下文  
+> 提示: 基本上， GpgME++ 的接口都定义在 `GpgME::Context` 类中  
 
-> 提示: 基本上 GpgME++ 的所有接口都定义在 `GpgME::Context` 类中  
+欸？context在这里，**GpgME::Clearsigned** 也证明我们刚才看到的确实是明文签名，但我们的**待签名文本**呢？  
 
-之后，让我们到函数体里看看，核心操作自然是 `context->sign(inputdata, outputdata, GpgME::Clearsigned);` 啦。  
-欸？context在这里，**GpgME::Clearsigned** 也证明我们刚才看到的确实是明文签名，但我们的 **待签名文本**呢？  
+它呢，是被用`GpgME::Data inputdata{text.data(), text.size(), false};` 包装了一下。这样，我们的待签名文本就传进去了!   
 
-往上看！它被用`GpgME::Data inputdata{rawdata.data(), rawdata.size(), false};` 包装了一下！这样，我们的待签名文本就传进去了！   
+同理 **outputdata** 也是一样，它是传出的签名。我们对其调用了`toString() 方法`，这样，它就变成了字符串输出了。  
 
-同理 **outputdata** 也是一样，是传出的签名哦。我们对其调用了 `toString() 方法`，这样，它就变成了返回值回到了主函数里了。
+> 提示: GpgME++ 所有数据的传入传出都使用统一的`GpgME::Data`对象  
 
-> 提示: GpgME++ 所有数据的传入传出都使用统一的 `GpgME::Data` 对象 
+这样，我们传入了原文本，并进行签名，最后输出了我们的签名。  
 
-去掉夹杂在里面的错误处理后，上面还有一些东东，是什么呢？ 
+### 0x25. sign 方法
 
-> 提示: GpgME++ 的错误处理是错误码，但提供现成的 Expection 封装  
-   
-是选择密钥！这里，我们的逻辑是选择第一个可签名的密钥。  
+这里，给出`sign`的函数原型:   
 
-这样，我们就选择了一个合适的密钥，传入了我们的原文本，并用函数进行签名，最后输出了我们的签名。
+``` c++
+/**
+ * @parma[in] plainText 待签名文本.
+ * @parma[in] mode 签名模式.
+ * @parma[out] signature 签名后文本.
+ */
+SigningResult sign(const Data &plainText, Data &signature, SignatureMode mode);
 
+enum SignatureMode {
+    NormalSignatureMode = 0, ///<常规签名，输出包括明文和签名.
+    Detached = 1,            ///<分离式签名.
+    Clearsigned = 2,         ///<明文签名.
+    SignArchive = 4,         ///<存档签名.
+    SignFile = 8,            ///<文件签名 (不打开文件，只传递文件名)(可与 NormalSignatureMode，Detached，Clearsigned 组合使用).
+};
+```
+> 提示: 使用 SignFile 要用`explicit Data(const char *filename)`构造的 Data 哦!  
+> 组合时，用`static_cast<GpgME::SignatureMode>(Gpgme::SignFile || ...)` 
 
-## WIP:0x30. 库的基本介绍
+> 提示: 如果要以 armor 格式输出 NormalSignatureMode 和 Detached 签名的话，请先用`Context::setArmor(true);`设置一下哦!  
 
-### WIP:0x31. 基本对象的基本介绍
+等等，那 SigningResult 呢?  
+
+**xxResult** 系列是 Context 中大部分函数的返回值，其为 **Result** 的子类，因而有一个公共方法: 
+``` c++
+/**
+ * @return GpgME::Error错误对象.
+ */
+const Error &error() const;
+```
+
+> 其实还有一个`void setError(const Error &)`，但我觉得应该没人用吧(OwO);  
+> Error 的话，让我们先放过它吧，只要知道它很重要就行了。  
+
+作为 sign 操作的 Result，它的特有方法是:
+{{< details summary="SigningResult的特有方法" >}}
+``` c++
+/**
+ * @parma[in] index 索引，从0开始.
+ */
+CreatedSignature createdSignature(unsigned int index) const;
+std::vector<CreatedSignature> createdSignatures() const;
+
+/**
+ * @parma[in] index 索引，从0开始.
+ */
+InvalidSigningKey invalidSigningKey(unsigned int index) const;
+std::vector<InvalidSigningKey> invalidSigningKeys() const;
+```
+对于 InvalidSigningKey，有: 
+``` c++
+/**
+ * @return 签名 (失败) 密钥的指纹.
+ */
+const char *fingerprint() const;
+
+/**
+ * @return 签名失败的原因.
+ */
+Error reason() const;
+```
+对于 CreatedSignature，有: 
+``` c++
+/**
+ * @return 签名密钥的指纹.
+ */
+const char *fingerprint() const;
+
+/**
+ * @return 签名创建时间 (Unix timestamp).
+ */
+time_t creationTime() const;
+
+/**
+ * @return 签名模式 (见上).
+ */
+SignatureMode mode() const;
+
+/**
+ * @return 用 unsigned int 表示的密钥算法.
+ */
+unsigned int publicKeyAlgorithm() const;
+
+/**
+ * @return 用字符串表示的密钥算法，如EdDSA.
+ */
+const char *publicKeyAlgorithmAsString() const;
+
+/**
+ * @return 用 unsigned int 表示的哈希算法.
+ */
+unsigned int hashAlgorithm() const;
+
+/**
+ * @return 用字符串表示的哈希算法，如SHA512.
+ */
+const char *hashAlgorithmAsString() const;
+
+/**
+ * @return 签名类型，同 RFC 4880 的 5.2.1 Signature Types，但只支持0，1，2
+ * 0指二进制签名 (NormalSignatureMode，Detached)，1指文档签名 (Clearsigned)，2指独立签名.
+ */
+unsigned int signatureClass() const;
+```
+{{< /details >}}
+
+## 0x30. 然后呢? 
+
+既然我们已经了解了 sign 方法，那让我们把解密和验证也看了吧! 
+
+### decrypt 方法
+
+这里，给出`decrypt`的函数原型:
+
+``` c++
+/**
+ * @parma[in] cipherText 密文.
+ * @parma[out] plainText 解密后文本.
+ */
+DecryptionResult decrypt(const Data &cipherText, Data &plainText);
+
+/**
+ * @deprecated DecryptionFlags 仅在 v1.9.0 可用，因此不介绍了.
+ */
+DecryptionResult decrypt(const Data &cipherText, Data &plainText, const DecryptionFlags flags);
+```
+看得出来，同志们用 decrypt 大抵是为了 plainText，故 DecryptionResult 的非 Result 部分成{}了。  
+
+> 一定记着 xxResult 系列的关键作用在于错误检查
+
+不过，还是要说说DecryptionResult的。
+
+{{< details summary="DecryptionResult的特有方法" >}}
+``` c++
+const char *unsupportedAlgorithm() const;
+bool isWrongKeyUsage() const;
+bool isDeVs() const;
+bool isBetaCompliance() const;
+bool isMime() const;
+const char *fileName() const;
+const char *sessionKey() const;
+const char *symkeyAlgo() const;
+unsigned int numRecipients() const;
+Recipient recipient(unsigned int idx) const;
+std::vector<Recipient> recipients() const;
+bool isLegacyCipherNoMDC() const;
+
+```
+{{< /details >}}
+
+## Deprecated:0x30. 库的基本介绍
+
+### Deprecated:0x31. 基本对象的基本介绍
 
 #### 1. Context
 
@@ -362,7 +485,3 @@ sensitive (敏感数据)
 17. `bool Key::isRoot() const;`
 
 {{< /details >}}
-
-### WIP:0x32. 基本操作
-
-### WIP:0x33. 错误处理
