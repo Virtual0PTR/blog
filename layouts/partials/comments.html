@@ -1,0 +1,52 @@
+{{- $repo := "Virtual0PTR/blog-v2" -}}
+{{- $repoId := "R_kgDOTvgTCA" -}}
+{{- $category := "Announcements" -}}
+{{- $categoryId := "DIC_kwDOTvgTCM4DCx84" -}}
+
+<div id="giscus-container" class="giscus-container mt-10"></div>
+
+<script>
+  (function() {
+    // 1. 获取当前页面的亮暗模式（Blowfish 开启暗色时会在 html 标签上加 class="dark"）
+    const getTheme = () => {
+      return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    };
+
+    // 2. 动态创建并插入 Giscus 脚本标签
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', '{{ $repo }}');
+    script.setAttribute('data-repo-id', '{{ $repoId }}');
+    script.setAttribute('data-category', '{{ $category }}');
+    script.setAttribute('data-category-id', '{{ $categoryId }}');
+    script.setAttribute('data-mapping', 'title');
+    script.setAttribute('data-strict', '0');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'bottom');
+    script.setAttribute('data-theme', getTheme()); // 动态加载初始主题
+    script.setAttribute('data-lang', 'zh-CN');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+
+    const container = document.getElementById('giscus-container');
+    container.appendChild(script);
+
+    // 3. 监听 Blowfish 切换亮暗模式时的 HTML class 变化并更新 Giscus 
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (iframe) {
+            iframe.contentWindow.postMessage(
+              { giscus: { setConfig: { theme: getTheme() } } },
+              'https://giscus.app'
+            );
+          }
+        }
+      });
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+  })();
+</script>

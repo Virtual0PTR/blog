@@ -1,0 +1,63 @@
+#+hugo_base_dir: ../
+
+* DONE 关于
+CLOSED: [2024-12-29 日 10:00]
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: zh-cn/about
+:EXPORT_FILE_NAME: _index
+:EXPORT_DRAFT: false
+:END:
+
+** 关于我
+欢迎来到这里，同志！ \\
+这里是虚径 (aka Virtual0PTR)，当前是一名学生哦！ 
+
+** 联系方式
+- 主要邮箱：[[mailto:i@virtpath.cc][i@virtpath.cc<优先>]]
+- [[https://t.me/Virtual0PTR][Telegram 私信]]
+/还是比较社恐的，故大概率不会主动发起聊天.../
+
+** 其他平台
+- [[https://github.com/Virtual0PTR][Github]]
+
+** 鉴权
+- [[/pgp.key][OpenPGP 公钥]]
+- [[/sshkey.pub][SSH 公钥]]
+如果怀疑与你对话者的身份，你可以自选一种方式进行鉴权。
+
+** 技术栈
+- C/C++
+- Lua
+- Javascript
+/或许应该学学Java，Python，Golang什么的…/
+
+* DONE About
+CLOSED: [2024-12-29 日 10:00]
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: en/about
+:EXPORT_FILE_NAME: _index
+:EXPORT_DRAFT: false
+:END:
+
+** About Me
+Welcome here! \\
+This is Virtual0PTR, currently a student!
+
+** Contact
+- Primary Email: [[mailto:i@virtpath.cc][i@virtpath.cc ]]
+- [[https://t.me/Virtual0PTR][Telegram Direct Message]]
+/I'm quite socially anxious, so I probably won't initiate a conversation.../
+
+** Other Platforms
+- [[https://github.com/Virtual0PTR][GitHub]]
+
+** Verification
+- [[/pgp.key][OpenPGP Public Key]]
+- [[/sshkey.pub][SSH Public Key]]
+If you doubt the identity of the person you are communicating with, feel free to choose either method for authentication.
+
+** Tech Stack
+- C/C++
+- Lua
+- JavaScript
+/Maybe I should learn Java, Python, Golang, or something.../

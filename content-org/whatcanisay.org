@@ -1,0 +1,21 @@
+#+hugo_base_dir: ../
+
+* DONE 单击此处添加标题
+CLOSED: [2026-01-01 四 08:00]
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: zh-cn/posts
+:EXPORT_FILE_NAME: whatcanisay
+:EXPORT_DRAFT: false
+:END:
+
+单击此处添加文本
+
+* DONE Click here to add a title
+CLOSED: [2026-01-01 四 08:00]
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: en/posts
+:EXPORT_FILE_NAME: whatcanisay
+:EXPORT_DRAFT: false
+:END:
+
+Click here to add text

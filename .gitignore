@@ -1,0 +1,8 @@
+# Hugo build output
+public/
+.hugo_build.lock
+resources/
+
+# OS / editor
+.DS_Store
+*.swp
