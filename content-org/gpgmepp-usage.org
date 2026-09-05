@@ -8,3 +8,41 @@
 :EXPORT_DRAFT: false
 :EXPORT_HUGO_PAIRED_SHORTCODES: alert
 :END:
+
+
+#+attr_shortcode: :icon bell :iconColor white :cardColor #CC7700
+#+begin_alert
+前置要求  \\
+阅读本文前，建议您了解 OpenPGP 及 GnuPG 的基本用法，并具备 C++ 的基础编程能力。
+#+end_alert
+
+** GPGME++ 的基本介绍
+
+*** GPGME 是什么？
+
+“GnuPG Made Easy (GPGME) 是一个旨在让应用程序更容易访问 GnuPG 的库。它提供了一个用于加密 、解密、签名、签名验证和密钥管理的加密 API。目前它使用 GnuPG 的 OpenPGP 后端作为默认选项，但 API 并不限于这个引擎。”  \\
+来源: [[https://www.gnupg.org/software/gpgme/index.html]]
+
+GPGME 的目标是 “让应用程序更容易访问 GnuPG”，因此:
+1. 它一离开 GnuPG 就是纸老虎，因为它本身只封装调用，真正的加解密全靠 GnuPG 后端。
+2. 它 (在默认情况下) 会以 ~/.gnupg 为工作目录。
+3. 它会调用 Pinentry (PIN码输入对话框) 输入解密密钥/访问智能卡的PIN。
+4. 它在调用 OpenPGP 智能卡方面上遥遥领先 (绝大多数软件在这方面都依赖它/整个GnuPG体系)。
+
+但 GPGME 并不是我们这篇文章论述的重点，我们要聊的是它的++版本。
+
+*** 这个++版本又是什么？
+GPGME++ (aka GPGMEPP) 就是 GPGME 的官方 C++ 绑定库，它的接口对于 C++ 比较友好，但仍保留有许多 C-style。  \\
+因为它是 GPGME 的封装，故 GPGME 的特点它都有。  \\
+接下来，我们就要用 GPGME++ 开始编码啦~
+
+** 基础部分
+#+attr_shortcode: :icon lightbulb :iconColor white :cardColor #0077DD
+#+begin_alert
+工欲善其事，必先利其器。  \\
+要执行下面的代码，您的环境应当满足下列条件:
+1. 安装 GnuPG 并在默认工作目录下有至少一对可用的公私钥。
+2. 安装 GPGME 和 GPGME++ (部分发行版将 GPGME++ 集成在 GPGME 的主包中，请根据实际情况安装对应的开发包) 。
+3. 有可用的 C++17 编译器。
+#+end_alert
+
