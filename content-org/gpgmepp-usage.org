@@ -1,0 +1,10 @@
+#+hugo_base_dir: ../
+
+* TODO GPGME++ 简明使用指南
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: zh-cn/posts
+:EXPORT_FILE_NAME: index
+:EXPORT_HUGO_BUNDLE: gpgmepp-usage
+:EXPORT_DRAFT: false
+:EXPORT_HUGO_PAIRED_SHORTCODES: alert
+:END:
