@@ -46,3 +46,62 @@ GPGME++ (aka GPGMEPP) 就是 GPGME 的官方 C++ 绑定库，它的接口对于 
 3. 有可用的 C++17 编译器。
 #+end_alert
 
+*** 加密与解密
+现在我们看一个最简的加密解密流程——把 "Hello World!" 加密后再解密回来。  \\
+请把代码中的指纹替换成你自己的密钥指纹（ =gpg -K= 是你的好帮手）。  \\
+  \\
+编译命令： 
+#+begin_src bash
+   g++ -std=gnu++17 basic_gpgmepp_encrypt_and_decrypt.cpp \
+       -o basic_gpgmepp_encrypt_and_decrypt \
+       `pkg-config --cflags --libs gpgmepp`
+#+end_src
+
+
+#+begin_src C++
+  // Filename: basic_gpgmepp_encrypt_and_decrypt.cpp
+  // SPDX-License-Identifier: Unlicense
+  // This file is released into the public domain under the Unlicense.
+  // See LICENSE or https://unlicense.org for details.
+  
+  #include <gpgme++/context.h> // 最基本的头文件（几乎包含所有操作）
+  #include <gpgme++/key.h> // 管理与使用密钥的核心头文件
+  #include <gpgme++/data.h> // 用于传入接收数据的数据结构头文件
+  #include <gpgme++/encryptionresult.h> // 加密操作的返回值结构头文件
+                                        // 每一个核心操作都需要导入对应的返回值结构头文件
+  #include <gpgme++/decryptionresult.h> // 同理
+  #include <iostream>
+  #include <vector>
+
+  int main() {
+    GpgME::initializeLibrary(); // 初始化库，所有使用GPGME++的程序的必经之路
+    // ctx的类型是std::unique_ptr<GpgME::Context>
+    // ctx是最核心的对象，里面有我们接下来要用到的操作
+    auto ctx = GpgME::Context::create(GpgME::Protocol::OpenPGP);
+    //目的是让我们接下来的输出都ascii化，便于复制验证
+    ctx->setArmor(true);
+    std::string plaintext = "Hello World!";
+    // 通过复制一段内存来构造GpgME::Data
+    GpgME::Data in(plaintext.c_str(), plaintext.size());
+    // 两个未初始化的GpgME::Data，可以由对应操作自动分配足够的内存
+    GpgME::Data out1,out2;
+    // 目前只是为了调用函数，后面会讲错误处理
+    GpgME::Error e;
+    // 通过指纹获取收件人密钥
+    // 注意：解密能否成功，取决于 ~/.gnupg 中是否存在对应的私钥
+    // 因此下面建议用你自己的密钥（公钥加密、私钥解密）来测试
+    // 当然，如果没有获取到密钥，程序就gg了
+    GpgME::Key key = ctx->key(/* Your key's fingerprint 千万不要忘记改 */, e);
+    // 传入收件人列表和存储明文和密文的数据结构来加密
+    // 返回值是 EncryptionResult，Error藏在里面，其他的操作同理，具体在错误处理部分讲解
+    ctx->encrypt(std::vector{key}, in, out1, /* flag */ GpgME::Context::None);
+    std::cout << "Ciphertext: \n" << out1.toString() << std::endl;
+    // 传入存储密文和明文的数据结构来解密
+    // 这个操作会自动查询工作目录下的私钥并匹配，不需要手动指定
+    // 同时，如果密钥不能直接访问，则会调用pinentry来解密密钥/访问智能卡
+    // 后面会讲由程序输入密码的解决方案
+    ctx->decrypt(out1, out2);
+    std::cout << "Plaintext: \n" << out2.toString() << std::endl;
+    return 0;
+  }
+#+end_src
