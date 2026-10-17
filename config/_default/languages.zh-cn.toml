@@ -2,7 +2,7 @@ disabled = false
 locale = "zh-cn"
 label = "简体中文"
 weight = 1
-title = "虚径的网志"
+title = "作战本部 VirtPath"
 contentDir = "content/zh-cn"
 
 [params]
@@ -16,14 +16,14 @@ contentDir = "content/zh-cn"
   copyright = "© { year } Virtual0PTR. 除特别注明外，本网站内容采用 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) 许可协议授权。"
 
 [params.author]
-  name = "虚径/Virtual0PTR"
+  name = "Virtual0PTR"
   email = "i@virtpath.cc"
 #   image = "img/blowfish_logo.png"
 #   imageQuality = 96
-  headline = "千里来寻故地，旧貌变新颜"
+  headline = "历史巨轮一直在向前呢..."
 #   bio = "A little bit about you"
-#   links = [
-#     { email = "mailto:hello@your_domain.com" },
+  links = [
+    { email = "mailto:i@virtpath.cc" },
 #     { link = "https://link-to-some-website.com/" },
 #     { amazon = "https://www.amazon.com/hz/wishlist/ls/wishlist-id" },
 #     { apple = "https://www.apple.com" },
@@ -36,7 +36,7 @@ contentDir = "content/zh-cn"
 #     { facebook = "https://facebook.com/username" },
 #     { flickr = "https://www.flickr.com/photos/username/" },
 #     { foursquare = "https://foursquare.com/username" },
-#     { github = "https://github.com/username" },
+    { github = "https://github.com/Virtual0PTR" },
 #     { gitlab = "https://gitlab.com/username" },
 #     { google = "https://www.google.com/" },
 #     { hashnode = "https://username.hashnode.dev" },
@@ -63,7 +63,7 @@ contentDir = "content/zh-cn"
 #     { spotify = "https://open.spotify.com/user/userid" },
 #     { stack-overflow = "https://stackoverflow.com/users/userid/username" },
 #     { steam = "https://steamcommunity.com/profiles/userid" },
-#     { telegram = "https://t.me/username" },
+    { telegram = "https://t.me/Virtual0PTR" },
 #     { threads = "https://www.threads.net/@username" },
 #     { tiktok = "https://tiktok.com/@username" },
 #     { tumblr = "https://username.tumblr.com" },
@@ -75,4 +75,4 @@ contentDir = "content/zh-cn"
 #     { ko-fi = "https://ko-fi.com/username" },
 #     { codeberg = "https://codeberg.org/username"},
 #     { printables = "https://www.printables.com/@username"},
-#   ]
+  ]
