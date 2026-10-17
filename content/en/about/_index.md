@@ -4,37 +4,31 @@ date = 2024-12-29T10:00:00+08:00
 draft = false
 +++
 
-## About Me {#about-me}
-
-Welcome here! <br />
+Welcome here!  <br />
 This is Virtual0PTR, currently a student!
 
 
-## Contact {#contact}
-
--   Primary Email: [i@virtpath.cc ](mailto:i@virtpath.cc)
--   [Telegram Direct Message](https://t.me/Virtual0PTR)
-
-_I'm quite socially anxious, so I probably won't initiate a conversation..._
+## Publicly available information {#publicly-available-information}
 
 
-## Other Platforms {#other-platforms}
+### Contact {#contact}
+
+-   Primary email: [i@virtpath.cc&lt;preferred&gt;](mailto:i@virtpath.cc)
+-   [Telegram DM](https://t.me/Virtual0PTR)
+
+_I’m rather socially anxious, so I’m unlikely to initiate chats..._
+
+
+### Other platforms {#other-platforms}
 
 -   [GitHub](https://github.com/Virtual0PTR)
 
-
-## Verification {#verification}
-
--   [OpenPGP Public Key](/pgp.key)
--   [SSH Public Key](/sshkey.pub)
-
-If you doubt the identity of the person you are communicating with, feel free to choose either method for authentication.
+_Also, I try to use different UIDs on each platform as much as possible. Therefore, you can basically assume that anyone outside the above platforms with the same UID as me is a coincidence or an impersonator._
 
 
-## Tech Stack {#tech-stack}
+### Authentication {#authentication}
 
--   C/C++
--   Lua
--   JavaScript
+-   [OpenPGP public key](/pgp.key)
+-   [SSH public key](/sshkey.pub)
 
-_Maybe I should learn Java, Python, Golang, or something..._
+If needed, you can choose either method for authentication.

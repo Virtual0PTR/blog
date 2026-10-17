@@ -8,56 +8,51 @@ CLOSED: [2024-12-29 日 10:00]
 :EXPORT_DRAFT: false
 :END:
 
-** 关于我
 欢迎来到这里，同志！ \\
-这里是虚径 (aka Virtual0PTR)，当前是一名学生哦！ 
+这里是虚径 (aka Virtual0PTR)，当前是一名学生！ 
 
-** 联系方式
+** 可公开的情报
+
+*** 联系方式
 - 主要邮箱：[[mailto:i@virtpath.cc][i@virtpath.cc<优先>]]
 - [[https://t.me/Virtual0PTR][Telegram 私信]]
 /还是比较社恐的，故大概率不会主动发起聊天.../
 
-** 其他平台
+*** 其他平台
 - [[https://github.com/Virtual0PTR][Github]]
 
-** 鉴权
+/另外，我会尽可能在各平台使用不同的 UID。因此，基本可以认为在上述平台之外 UID 与我相同的人，是撞车或是冒充。/
+
+*** 鉴权
 - [[/pgp.key][OpenPGP 公钥]]
 - [[/sshkey.pub][SSH 公钥]]
-如果怀疑与你对话者的身份，你可以自选一种方式进行鉴权。
+如果需要的话，你可以自选一种方式进行鉴权。
 
-** 技术栈
-- C/C++
-- Lua
-- Javascript
-/或许应该学学Java，Python，Golang什么的…/
 
 * DONE About
-CLOSED: [2024-12-29 日 10:00]
+CLOSED: [2024-12-29 Sun 10:00]
 :PROPERTIES:
 :EXPORT_HUGO_SECTION: en/about
 :EXPORT_FILE_NAME: _index
 :EXPORT_DRAFT: false
 :END:
 
-** About Me
-Welcome here! \\
+Welcome here!  \\
 This is Virtual0PTR, currently a student!
 
-** Contact
-- Primary Email: [[mailto:i@virtpath.cc][i@virtpath.cc ]]
-- [[https://t.me/Virtual0PTR][Telegram Direct Message]]
-/I'm quite socially anxious, so I probably won't initiate a conversation.../
+** Publicly available information
 
-** Other Platforms
+*** Contact
+- Primary email: [[mailto:i@virtpath.cc][i@virtpath.cc<preferred>]]
+- [[https://t.me/Virtual0PTR][Telegram DM]]
+/I’m rather socially anxious, so I’m unlikely to initiate chats.../
+
+*** Other platforms
 - [[https://github.com/Virtual0PTR][GitHub]]
 
-** Verification
-- [[/pgp.key][OpenPGP Public Key]]
-- [[/sshkey.pub][SSH Public Key]]
-If you doubt the identity of the person you are communicating with, feel free to choose either method for authentication.
+/Also, I try to use different UIDs on each platform as much as possible. Therefore, you can basically assume that anyone outside the above platforms with the same UID as me is a coincidence or an impersonator./
 
-** Tech Stack
-- C/C++
-- Lua
-- JavaScript
-/Maybe I should learn Java, Python, Golang, or something.../
+*** Authentication
+- [[/pgp.key][OpenPGP public key]]
+- [[/sshkey.pub][SSH public key]]
+If needed, you can choose either method for authentication.
