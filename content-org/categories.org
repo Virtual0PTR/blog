@@ -1,0 +1,15 @@
+#+hugo_base_dir: ../
+
+* 分类
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: zh-cn/categories
+:EXPORT_FILE_NAME: _index
+:EXPORT_DRAFT: false
+:END:
+
+* Categories
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: en/categories
+:EXPORT_FILE_NAME: _index
+:EXPORT_DRAFT: false
+:END:

@@ -1,0 +1,15 @@
+#+hugo_base_dir: ../
+
+* 标签
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: zh-cn/tags
+:EXPORT_FILE_NAME: _index
+:EXPORT_DRAFT: false
+:END:
+
+* Tags
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: en/tags
+:EXPORT_FILE_NAME: _index
+:EXPORT_DRAFT: false
+:END:
