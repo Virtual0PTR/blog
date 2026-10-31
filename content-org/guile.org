@@ -1,1 +1,10 @@
 #+hugo_base_dir: ../
+
+* TODO Guile GOOPS 学习笔记
+:PROPERTIES:
+:EXPORT_HUGO_SECTION: zh-cn/posts
+:EXPORT_FILE_NAME: index
+:EXPORT_HUGO_BUNDLE: guile-goops
+:EXPORT_DRAFT: false
+:EXPORT_HUGO_PAIRED_SHORTCODES: alert
+:END:
