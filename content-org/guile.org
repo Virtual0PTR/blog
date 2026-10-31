@@ -8,3 +8,96 @@
 :EXPORT_DRAFT: false
 :EXPORT_HUGO_PAIRED_SHORTCODES: alert
 :END:
+
+最近在品鉴 Guile 这门 Scheme 方言，这里简单记录一下面向对象部分的使用。
+
+** 开始
+#+name: first-example
+#+begin_src scheme :scheme guile :results output :exports both
+  (use-modules (oop goops))  ;导入 GOOPS 模块
+  (define-class <myclass> () ;习惯上, 我们使用尖括号括住类名，以便于区分
+    
+  	                   ;这个圆括号是用来继承的, 详见后文
+                             ;目前圆括号里面没有东西, 说明他没有继承任何类
+
+    (myvar))  ;需要注意的是，如果添加第二个值, 必须单开一个列表, 因为列表里面放的其他项是槽的配置参数
+              ;在没有为槽配置参数的时候, 括号可以省略
+  	    ;最终，我们定义了一个名为 myclass 的类, 其具有 myvar 这一个槽
+              ;目前可以简单的认为槽是变量/字段           
+  (define myobj1 (make <myclass>)) ;创建 <myclass> 的实例 myobj1
+  (define myobj2 (make-instance <myclass>))
+  					;创建 <myclass> 的实例 myobj2
+                                          ;make-instance 是 make 的别名
+  ;理论上应该使用 setter/getter 的，不过作为开始, 直接进行操作也不是不行
+  (slot-set! myobj1 'myvar 114514)   ;直接设置底层槽
+  (display (slot-ref myobj1 'myvar)) ;直接读取底层槽
+  (display "\n")
+
+  ;通过导入 describe 模块, 我们可以便捷地看到实例的结构
+  (use-modules (oop goops describe))
+  ;注意没有初始化的槽的表示方式
+  (describe myobj2)
+#+end_src
+输出结果：
+#+RESULTS: first-example
+: 114514
+: #<<myclass> 7fc470ee4f10> is an instance of class <myclass>
+: Slots are: 
+:      myvar = #<unbound>
+
+** 槽的配置选项
+
+*** 槽的初始值
+GOOPS 提供了 =#:init-value= =#:init-form= =#:init-thunk= =#:init-keyword= 这四个选项来配置初始值，让我们看看用法吧!
+#+name: slot-init
+#+begin_src scheme :scheme guile :results output :exports both
+  (use-modules (oop goops) (oop goops describe))
+
+  (define global-var 114513)
+  (define (get-number)
+    (set! global-var (+ global-var 1))
+    global-var) ;这是我们定义的神秘小工具. 用来展现 :init-form 和 :init-thunk 的功能
+
+  (define-class <slot-init-test> ()
+    (var-with-init-value #:init-value (get-number))
+    (var-with-init-form #:init-form (get-number))
+    (var-with-init-thunk #:init-thunk get-number)
+    ;这里就可以看出 thunk 的不同之处了: 它接受的是一个函数而不是表达式
+    (var-with-init-keyword #:init-keyword #:value4)
+    ;这个配置属性不是调用函数, 而是接受 make 的传参
+    ;当然, 这个说法是完全不准确的, 因为使用元对象可以覆盖 make 后面参数的被使用方式
+    ;详见元对象部分
+    ;至于为什么使用#: 它是Guile规定的一种自求值关键字, 这使得我们可以不使用 quote
+  ) ;其实你可以同时配置 keyword 和其他的,  一个作为默认值, 一个作为有外部传入时的值
+  (define myobj1 (make <slot-init-test>))
+  (describe myobj1)
+
+  ;使用 make 进行传参
+  ;其中偶数元素 (从零开始计数) 是关键字，奇数元素是对应的值
+  (define myobj2 (make <slot-init-test> #:value4 (get-number)))
+  (describe myobj2)
+
+#+end_src
+输出结果：
+#+RESULTS: slot-init
+#+begin_example
+#<<slot-init-test> 7f39a7f93990> is an instance of class <slot-init-test>
+Slots are: 
+     var-with-init-value = 114514
+     var-with-init-form = 114515
+     var-with-init-thunk = 114516
+     var-with-init-keyword = #<unbound>
+#<<slot-init-test> 7f39a736a060> is an instance of class <slot-init-test>
+Slots are: 
+     var-with-init-value = 114514
+     var-with-init-form = 114518
+     var-with-init-thunk = 114519
+     var-with-init-keyword = 114517
+#+end_example
+
+从中，我们可以看出: 
+1. =init-value= 在类定义时求值对应表达式, 其值 (对于 list 之类的是地址) 在类的所有实例中共享。
+2. =init-form= 和 =init-thunk= 在创建对象时求值/执行对应的配置。
+3. =init-form= 接受一个表达式来初始化，而 =init-thunk= 接受一个无参数 lambda 来初始化。
+4. =init-keyword= 为我们提供了可在 make 中使用的关键字, 以便于我们进行初始化。
+5. (废话) make 中的表达式调用先于类中的创建对象时的动态求值。
